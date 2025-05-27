@@ -1,0 +1,21 @@
+package main
+
+import (
+	"job_portal/packages/config"
+	"job_portal/packages/models"
+	"job_portal/packages/store"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	config.LoadEnv()
+	dbUrl := config.GetEnv("DATABASE_URL")
+	port := config.GetEnv("PORT")
+
+	store.ConnectDB(dbUrl)
+	store.DB.AutoMigrate(&models.User{})
+	r := gin.Default()
+
+	r.Run(":" + port)
+}
