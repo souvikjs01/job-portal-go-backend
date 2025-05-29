@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Job struct {
-	Id              int       `json:"id"`
+	Id              int       `json:"id" gorm:"primaryKey;autoIncrement"`
 	Title           string    `json:"title"`
 	Description     string    `json:"description"`
 	Location        string    `json:"location"`

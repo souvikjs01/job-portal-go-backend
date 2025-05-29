@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"job_portal/packages/config"
 	"job_portal/packages/models"
 	"job_portal/packages/store"
@@ -43,8 +42,9 @@ func RegisterUser(c *gin.Context) {
 
 	// generate jwt
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user.ID,
-		"exp":     time.Now().Add(time.Hour * 72).Unix(),
+		"user_id":  user.ID,
+		"is_admin": user.IsAdmin,
+		"exp":      time.Now().Add(time.Hour * 72).Unix(),
 	})
 
 	tokenStr, err := token.SignedString([]byte(jwt_secret)) // SignedString() expects a []byte when using SigningMethodHS256
@@ -74,7 +74,6 @@ var input struct {
 }
 
 func LogInUser(c *gin.Context) {
-	fmt.Println("hi there")
 	err := c.ShouldBindBodyWithJSON(&input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -101,8 +100,9 @@ func LogInUser(c *gin.Context) {
 
 	// generate jwt token:
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user.ID,
-		"exp":     time.Now().Add(time.Hour * 72).Unix(),
+		"user_id":  user.ID,
+		"is_admin": user.IsAdmin,
+		"exp":      time.Now().Add(time.Hour * 72).Unix(),
 	})
 
 	tokenStr, err := token.SignedString([]byte(jwt_secret))
