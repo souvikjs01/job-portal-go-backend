@@ -17,5 +17,7 @@ func Routers(r *gin.Engine) {
 	// job routes:
 	router.POST("/job/new", middleware.Authenticated, controllers.CreateJob)
 	router.PUT("/job/update/:id", middleware.Authenticated, controllers.UpdateJob)
-
+	router.GET("/job/:id", controllers.GetJobById)
+	router.DELETE("/job/remove/:id", middleware.Authenticated, controllers.DeleteJobById)
+	router.GET("/job/all", controllers.GetAllJobs)
 }

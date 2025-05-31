@@ -111,3 +111,83 @@ func UpdateJob(c *gin.Context) {
 		"job":     job,
 	})
 }
+
+// get job by its id:
+func GetJobById(c *gin.Context) {
+	jobIdStr := c.Param("id")
+	jobId, err := strconv.Atoi(jobIdStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid job ID",
+		})
+		return
+	}
+
+	var job models.Job
+	if err := store.DB.First(&job, jobId).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "job not found",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, job)
+}
+
+// get job by its id and delete
+func DeleteJobById(c *gin.Context) {
+	jobIdStr := c.Param("id")
+	jobId, err := strconv.Atoi(jobIdStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid job ID",
+		})
+		return
+	}
+
+	// check if the user is admin or not
+	isAdminVal, exist := c.Get("is_admin")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized",
+		})
+		return
+	}
+
+	isAdmin, ok := isAdminVal.(bool)
+	if !ok || !isAdmin {
+		c.JSON(http.StatusForbidden, gin.H{
+			"error": "Only admin can delete jobs",
+		})
+		return
+	}
+	var job models.Job
+	result := store.DB.Delete(&job, jobId)
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Job not found"})
+		return
+	}
+
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete job"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Job deleted successfully"})
+}
+
+// fetch all the jobs
+func GetAllJobs(c *gin.Context) {
+	var jobs []models.Job
+
+	result := store.DB.Find(&jobs)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to fetch jobs",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"jobs": jobs,
+	})
+}
