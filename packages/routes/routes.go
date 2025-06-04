@@ -14,6 +14,11 @@ func Routers(r *gin.Engine) {
 	router.POST("/user/register", controllers.RegisterUser)
 	router.POST("/user/login", controllers.LogInUser)
 
+	// user management:
+	router.GET("/user/all", controllers.GetAllUsers)
+	router.GET("/user/:id", controllers.GetUserById)
+	router.DELETE("/user/remove/:id", middleware.Authenticated, controllers.RemoveUserById)
+
 	// job routes:
 	router.POST("/job/new", middleware.Authenticated, controllers.CreateJob)
 	router.PUT("/job/update/:id", middleware.Authenticated, controllers.UpdateJob)
