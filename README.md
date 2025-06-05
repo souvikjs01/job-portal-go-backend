@@ -26,9 +26,9 @@ This is a RESTful API for a Job Portal system built with **Golang**, **Gin Frame
 
 ---
 ## 🔐 Create .env File
-PORT=8000
-DATABASE_URL=postgres://user:password@localhost:5432/job_portal_db
-JWT_SECRET=your_jwt_secret_key
+PORT=8000.  
+DATABASE_URL=postgres://user:password@localhost:5432/job_portal_db.  
+JWT_SECRET=your_jwt_secret_key.  
 
 ---
 
