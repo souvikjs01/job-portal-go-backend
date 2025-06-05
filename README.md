@@ -26,5 +26,3 @@ This is a RESTful API for a Job Portal system built with **Golang**, **Gin Frame
 
 ---
 
-## 📁 Project Structure
-
