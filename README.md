@@ -25,4 +25,17 @@ This is a RESTful API for a Job Portal system built with **Golang**, **Gin Frame
 - **Environment Config**: dotenv
 
 ---
+## 🔐 Create .env File
+PORT=8000
+DATABASE_URL=postgres://user:password@localhost:5432/job_portal_db
+JWT_SECRET=your_jwt_secret_key
 
+---
+
+## Install Dependencies
+
+go mod tidy
+
+---
+## Run the Server
+go run ./cmd/main.go
