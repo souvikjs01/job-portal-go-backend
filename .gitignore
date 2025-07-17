@@ -41,3 +41,5 @@ Thumbs.db
 # Go workspace files (Go 1.18+ modules)
 go.work
 go.work.sum
+
+job_portal
