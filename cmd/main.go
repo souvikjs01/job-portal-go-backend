@@ -5,6 +5,7 @@ import (
 	"job_portal/packages/models"
 	"job_portal/packages/routes"
 	"job_portal/packages/store"
+	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -24,7 +25,11 @@ func main() {
 		&models.ForgotPasswordRequest{},
 	)
 	r := gin.Default()
-
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"Response": "Everything is ok",
+		})
+	})
 	// allow all the origin :
 	r.Use(cors.Default())
 	routes.Routers(r)
