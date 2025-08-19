@@ -20,9 +20,6 @@ func main() {
 	store.DB.AutoMigrate(
 		&models.User{},
 		&models.Job{},
-		&models.ChangePasswordRequest{},
-		&models.PasswordValidation{},
-		&models.ForgotPasswordRequest{},
 	)
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
