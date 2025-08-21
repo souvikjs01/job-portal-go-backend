@@ -15,4 +15,5 @@ type Job struct {
 	Type            string    `json:"type"`
 	CreatedAt       time.Time `json:"created_at"`
 	UserID          int       `json:"user_id"`
+	ApplyLink       *string   `json:"applyLink"`
 }
