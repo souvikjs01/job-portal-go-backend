@@ -2,9 +2,9 @@ package main
 
 import (
 	"job_portal/packages/config"
-	"job_portal/packages/models"
 	"job_portal/packages/routes"
 	"job_portal/packages/store"
+	"log"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -12,15 +12,19 @@ import (
 )
 
 func main() {
-	config.LoadEnv()
-	dbUrl := config.GetEnv("DATABASE_URL")
-	port := config.GetEnv("PORT")
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		panic("failed to load config: " + err.Error())
+	}
 
-	store.ConnectDB(dbUrl)
-	store.DB.AutoMigrate(
-		&models.User{},
-		&models.Job{},
-	)
+	// connect database
+	db, err := store.ConnectDB(cfg.Database.DB_URL)
+	if err != nil {
+		log.Fatalf("Failed to database connection %s", err)
+	}
+
+	defer db.Close()
+
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -29,7 +33,8 @@ func main() {
 	})
 	// allow all the origin :
 	r.Use(cors.Default())
-	routes.Routers(r)
 
-	r.Run(":" + port)
+	routes.SetupRoutes(r, db, cfg)
+
+	r.Run(":" + cfg.Server.Port)
 }

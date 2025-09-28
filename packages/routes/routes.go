@@ -1,28 +1,40 @@
 package routes
 
 import (
-	"job_portal/packages/controllers"
-	"job_portal/packages/middleware"
+	"job_portal/packages/auth"
+	"job_portal/packages/config"
+	"job_portal/packages/handlers"
+	"job_portal/packages/repository"
+	"job_portal/packages/services"
+	"job_portal/packages/store"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-func Routers(r *gin.Engine) {
-	router := r.Group("/api/v1")
+func SetupRoutes(router *gin.Engine, db *store.DB, cfg *config.Config) {
+	// CORS Setup
+	conf := cors.DefaultConfig()
+	conf.AllowAllOrigins = true
+	conf.AllowCredentials = true
+	conf.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	router.Use(cors.New(conf))
 
-	// auth routes:
-	router.POST("/user/register", controllers.RegisterUser)
-	router.POST("/user/login", controllers.LogInUser)
+	// Initialize repository layer
+	userRepo := repository.NewUserRepository(db)
 
-	// user management:
-	router.GET("/user/all", controllers.GetAllUsers)
-	router.GET("/user/:id", controllers.GetUserById)
-	router.DELETE("/user/remove/:id", middleware.Authenticated, controllers.RemoveUserById)
+	// Initialize auth service
+	jwtService := auth.NewJWTService(&cfg.Auth)
 
-	// job routes:
-	router.POST("/job/new", middleware.Authenticated, controllers.CreateJob)
-	router.PUT("/job/update/:id", middleware.Authenticated, controllers.UpdateJob)
-	router.GET("/job/:id", controllers.GetJobById)
-	router.DELETE("/job/remove/:id", middleware.Authenticated, controllers.DeleteJobById)
-	router.GET("/job/all", controllers.GetAllJobs)
+	// Initialize service layer
+	userService := services.NewUserService(userRepo, jwtService)
+
+	// Initialize handler layer
+	userHandler := handlers.NewUserHandler(userService)
+
+	// Public Routes
+	publicAuthRoute := router.Group("/api/v1/auth")
+	{
+		publicAuthRoute.POST("/signup", userHandler.Register)
+	}
 }
