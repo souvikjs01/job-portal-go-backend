@@ -2,8 +2,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Role string
@@ -15,12 +13,12 @@ const (
 )
 
 type User struct {
-	ID             uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	ID             string    `json:"id" gorm:"primaryKey"`
 	Username       string    `json:"username" validate:"required,min=3,max=10"`
 	Password       string    `json:"password" validate:"required,min=4,max=10"`
 	Email          string    `json:"email" validate:"required"`
 	Jobs           []Job     `json:"jobs" gorm:"foreignKey:UserID"`
-	Role           Role      `json:"role" validate:"required,oneof=user recruiter admin"`
+	Role           Role      `json:"role" gorm:"default:user" validate:"required,oneof=user recruiter admin"`
 	ProfilePicture *string   `json:"profile_picture"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
@@ -35,7 +33,7 @@ const (
 )
 
 type Job struct {
-	Id              uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	Id              string    `json:"id" gorm:"primaryKey"`
 	Title           string    `json:"title" validate:"required"`
 	Description     string    `json:"description" validate:"required"`
 	Location        string    `json:"location" validate:"required"`
@@ -48,15 +46,14 @@ type Job struct {
 	CreatedAt       time.Time `json:"created_at"`
 	ApplyLink       *string   `json:"applyLink"`
 
-	UserID uuid.UUID `json:"userId" validate:"required"` // foreign key
-	User   User      `json:"user" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserID string `json:"userId" validate:"required"` // foreign key
+	User   User   `json:"user" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type CreateUser struct {
 	Username       string  `json:"username" validate:"required,min=3,max=10"`
 	Password       string  `json:"password" validate:"required,min=4,max=10"`
 	Email          string  `json:"email" validate:"required"`
-	Role           Role    `json:"role" validate:"required,oneof=user recruiter admin"`
 	ProfilePicture *string `json:"profile_picture"`
 }
 
