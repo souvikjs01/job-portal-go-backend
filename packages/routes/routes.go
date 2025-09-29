@@ -42,5 +42,6 @@ func SetupRoutes(router *gin.Engine, db *store.DB, cfg *config.Config) {
 	{
 		privateRoute.GET("/user/:id", jwtService.AuthMiddleware(), userHandler.UserProfile)
 		privateRoute.GET("/users", jwtService.AuthMiddleware(), userHandler.GetAllUsers)
+		privateRoute.PUT("/update/:id", jwtService.AuthMiddleware(), userHandler.UpdateUser)
 	}
 }

@@ -12,7 +12,7 @@ type UserService interface {
 	Login(req *models.LoginUser) (*models.User, string, error)
 	GetProfile(id string) (*models.User, error)
 	GetAllUser() ([]models.User, error)
-	// UpdateProfile(token string, req *models.UpdateUserRequest) (*models.User, error)
+	UpdateProfile(id string, req *models.UpdateUser) (*models.User, error)
 	// ChangePassword(token string, req *models.ChangePasswordRequest) error
 	// DeleteProfile(token, password string) error
 	// ListUsers(token string, filter models.ListUsersFilter) (*models.ListUsersResponse, error)
@@ -104,4 +104,14 @@ func (s *userService) GetAllUser() ([]models.User, error) {
 	}
 
 	return users, nil
+}
+
+func (s *userService) UpdateProfile(id string, req *models.UpdateUser) (*models.User, error) {
+	updatedUser, err := s.userRepo.Update(id, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedUser, nil
 }

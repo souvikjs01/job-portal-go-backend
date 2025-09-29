@@ -123,3 +123,40 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 		"data":    users,
 	})
 }
+
+func (h *UserHandler) UpdateUser(c *gin.Context) {
+	id := c.Param("id")
+
+	var req models.UpdateUser
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   "Invalid request payload",
+		})
+		return
+	}
+
+	if err := validation.ValidateStruct(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   err,
+		})
+		return
+	}
+
+	// Call service layer
+	updatedUser, err := h.userService.UpdateProfile(id, &req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    updatedUser,
+	})
+}
