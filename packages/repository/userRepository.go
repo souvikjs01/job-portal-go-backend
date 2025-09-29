@@ -13,6 +13,7 @@ import (
 type UserRepository interface {
 	Create(user *models.CreateUser) (*models.User, error)
 	GetByID(id string) (*models.User, error)
+	GetAllUsers() ([]models.User, error)
 	GetByEmail(email string) (*models.User, error)
 	GetByUsername(username string) (*models.User, error)
 	Update(id string, user *models.UpdateUser) (*models.User, error)
@@ -52,6 +53,17 @@ func (r *userRepository) GetByID(id string) (*models.User, error) {
 	}
 
 	return &user, err
+}
+
+func (r *userRepository) GetAllUsers() ([]models.User, error) {
+	var users []models.User
+	err := r.db.Find(&users).Error
+
+	if err != nil {
+		return nil, fmt.Errorf("no user found")
+	}
+
+	return users, nil
 }
 
 func (r *userRepository) GetByEmail(email string) (*models.User, error) {
