@@ -20,12 +20,12 @@ func ConnectDB(dsn string) (*DB, error) {
 		return nil, fmt.Errorf("failed to connect db: %s", err)
 	}
 
-	log.Println("Database connected successfully")
-
 	db.AutoMigrate(
 		&models.User{},
 		&models.Job{},
 	)
+
+	log.Println("Database connected successfully")
 
 	return &DB{db}, nil
 }

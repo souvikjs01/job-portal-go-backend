@@ -12,13 +12,13 @@ import (
 
 type UserRepository interface {
 	Create(user *models.CreateUser) (*models.User, error)
-	GetByID(id uuid.UUID) (*models.User, error)
+	GetByID(id string) (*models.User, error)
 	GetByEmail(email string) (*models.User, error)
 	GetByUsername(username string) (*models.User, error)
-	Update(id uuid.UUID, user *models.UpdateUser) (*models.User, error)
-	Delete(id uuid.UUID) error
+	Update(id string, user *models.UpdateUser) (*models.User, error)
+	Delete(id string) error
 	// UpdatePassword(userID uuid.UUID, hashedPassword string) error
-	UpdateRole(userID uuid.UUID, role models.Role) error
+	UpdateRole(userID string, role models.Role) error
 }
 
 type userRepository struct {
@@ -33,11 +33,10 @@ func NewUserRepository(db *store.DB) UserRepository {
 
 func (r *userRepository) Create(user *models.CreateUser) (*models.User, error) {
 	newUser := models.User{
-		ID:       uuid.New(),
+		ID:       uuid.New().String(),
 		Username: user.Username,
 		Password: user.Password,
 		Email:    user.Email,
-		Role:     user.Role,
 	}
 	if err := r.db.Create(&newUser).Error; err != nil {
 		return nil, fmt.Errorf("failed to sign up %s", err)
@@ -45,7 +44,7 @@ func (r *userRepository) Create(user *models.CreateUser) (*models.User, error) {
 	return &newUser, nil
 }
 
-func (r *userRepository) GetByID(id uuid.UUID) (*models.User, error) {
+func (r *userRepository) GetByID(id string) (*models.User, error) {
 	var user models.User
 	err := r.db.Where("id = ?", id).First(&user).Error
 	if err != nil {
@@ -75,7 +74,7 @@ func (r *userRepository) GetByUsername(username string) (*models.User, error) {
 	return &user, err
 }
 
-func (r *userRepository) Update(id uuid.UUID, user *models.UpdateUser) (*models.User, error) {
+func (r *userRepository) Update(id string, user *models.UpdateUser) (*models.User, error) {
 	var existUser models.User
 
 	if err := r.db.First(&existUser, "id = ?", id).Error; err != nil {
@@ -89,7 +88,7 @@ func (r *userRepository) Update(id uuid.UUID, user *models.UpdateUser) (*models.
 	return &existUser, nil
 }
 
-func (r *userRepository) Delete(id uuid.UUID) error {
+func (r *userRepository) Delete(id string) error {
 	return r.db.Delete(&models.User{}, id).Error
 }
 
@@ -98,7 +97,7 @@ func (r *userRepository) Delete(id uuid.UUID) error {
 // 	return err
 // }
 
-func (r *userRepository) UpdateRole(userID uuid.UUID, role models.Role) error {
+func (r *userRepository) UpdateRole(userID string, role models.Role) error {
 
 	return r.db.Model(&models.User{}).
 		Where("id = ?", userID).

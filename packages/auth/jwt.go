@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"job_portal/packages/config"
 	"job_portal/packages/models"
+	"net/http"
+	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -15,6 +18,7 @@ type JWTService interface {
 	ValidateAccessToken(tokenString string) (*models.JWTClaims, error)
 	HashPassword(password string) (string, error)
 	ValidatePassword(password, hashedPassword string) error
+	AuthMiddleware() gin.HandlerFunc
 }
 
 type jwtService struct {
@@ -47,7 +51,7 @@ func (s *jwtService) GenerateToken(user *models.User) (string, error) {
 
 func (s *jwtService) generateAccessToken(user *models.User) (string, error) {
 	claims := CustomClaims{
-		UserID:   user.ID.String(),
+		UserID:   user.ID,
 		Email:    user.Email,
 		Username: user.Username,
 		Role:     user.Role,
@@ -56,7 +60,7 @@ func (s *jwtService) generateAccessToken(user *models.User) (string, error) {
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    "user-service",
-			Subject:   user.ID.String(),
+			Subject:   user.ID,
 		},
 	}
 
@@ -100,4 +104,47 @@ func (s *jwtService) HashPassword(password string) (string, error) {
 
 func (s *jwtService) ValidatePassword(password, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
+func (s *jwtService) AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Authorization header missing",
+			})
+			c.Abort()
+			return
+		}
+
+		// Check if header starts with "Bearer "
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Invalid authorization format",
+			})
+			c.Abort()
+			return
+		}
+
+		tokenString := parts[1]
+
+		// Parse & validate the JWT token
+		claims, err := s.ValidateAccessToken(tokenString)
+
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Invalid or expired token",
+			})
+			c.Abort()
+			return
+		}
+
+		c.Set("userId", claims.UserID)
+		c.Set("email", claims.Email)
+		c.Set("username", claims.Username)
+		c.Set("role", claims.Role)
+
+		c.Next()
+	}
 }

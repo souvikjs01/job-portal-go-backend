@@ -52,3 +52,58 @@ func (h *UserHandler) Register(c *gin.Context) {
 		"data":    user,
 	})
 }
+
+func (h *UserHandler) Login(c *gin.Context) {
+	var req models.LoginUser
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   "Invalid request payload",
+		})
+		return
+	}
+
+	if err := validation.ValidateStruct(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   err,
+		})
+		return
+	}
+
+	// Call service layer
+	user, token, err := h.userService.Login(&req)
+	if err != nil || token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"token":   token,
+		"data":    user,
+	})
+}
+
+func (h *UserHandler) UserProfile(c *gin.Context) {
+	id := c.Param("id")
+
+	// Call service layer
+	user, err := h.userService.GetProfile(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    user,
+	})
+}

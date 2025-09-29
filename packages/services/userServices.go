@@ -9,9 +9,8 @@ import (
 
 type UserService interface {
 	Register(req *models.CreateUser) (*models.User, string, error)
-	// Login(req *models.LoginRequest) (*models.User, *models.TokenPair, error)
-	// Logout(token string) error
-	// GetProfile(token string) (*models.User, error)
+	Login(req *models.LoginUser) (*models.User, string, error)
+	GetProfile(id string) (*models.User, error)
 	// UpdateProfile(token string, req *models.UpdateUserRequest) (*models.User, error)
 	// ChangePassword(token string, req *models.ChangePasswordRequest) error
 	// DeleteProfile(token, password string) error
@@ -64,4 +63,35 @@ func (s *userService) Register(req *models.CreateUser) (*models.User, string, er
 	}
 
 	return user, token, nil
+}
+
+// Authentication methods
+func (s *userService) Login(req *models.LoginUser) (*models.User, string, error) {
+
+	existUser, err := s.userRepo.GetByEmail(req.Email)
+	if err != nil {
+		return nil, "", fmt.Errorf("user with email %s not exists", req.Email)
+	}
+
+	err = s.JWTService.ValidatePassword(req.Password, existUser.Password)
+	if err != nil {
+		return nil, "", fmt.Errorf("invalid password: %w", err)
+	}
+
+	// Generate token
+	token, err := s.JWTService.GenerateToken(existUser)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to generate tokens: %w", err)
+	}
+
+	return existUser, token, nil
+}
+
+func (s *userService) GetProfile(id string) (*models.User, error) {
+	user, err := s.userRepo.GetByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get profile: %v", err)
+	}
+
+	return user, nil
 }

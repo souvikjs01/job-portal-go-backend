@@ -36,5 +36,10 @@ func SetupRoutes(router *gin.Engine, db *store.DB, cfg *config.Config) {
 	publicAuthRoute := router.Group("/api/v1/auth")
 	{
 		publicAuthRoute.POST("/signup", userHandler.Register)
+		publicAuthRoute.POST("/login", userHandler.Login)
+	}
+	privateRoute := router.Group("/api")
+	{
+		privateRoute.GET("/user/:id", jwtService.AuthMiddleware(), userHandler.UserProfile)
 	}
 }
