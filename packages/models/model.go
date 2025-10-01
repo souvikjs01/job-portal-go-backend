@@ -74,3 +74,7 @@ type JWTClaims struct {
 	Username string `json:"username"`
 	Role     Role   `json:"role"`
 }
+
+type UpdateRoleRequest struct {
+	Role Role `json:"role" binding:"required,oneof=user recruiter admin"`
+}

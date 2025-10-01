@@ -19,7 +19,7 @@ type UserRepository interface {
 	Update(id string, user *models.UpdateUser) (*models.User, error)
 	Delete(id string) error
 	// UpdatePassword(userID uuid.UUID, hashedPassword string) error
-	UpdateRole(userID string, role models.Role) error
+	UpdateRole(userID string, role models.UpdateRoleRequest) error
 }
 
 type userRepository struct {
@@ -109,12 +109,12 @@ func (r *userRepository) Delete(id string) error {
 // 	return err
 // }
 
-func (r *userRepository) UpdateRole(userID string, role models.Role) error {
+func (r *userRepository) UpdateRole(userID string, req models.UpdateRoleRequest) error {
 
 	return r.db.Model(&models.User{}).
 		Where("id = ?", userID).
 		Updates(map[string]interface{}{
-			"role":       role,
+			"role":       req.Role,
 			"updated_at": time.Now(),
 		}).Error
 }

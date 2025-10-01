@@ -13,11 +13,9 @@ type UserService interface {
 	GetProfile(id string) (*models.User, error)
 	GetAllUser() ([]models.User, error)
 	UpdateProfile(id string, req *models.UpdateUser) (*models.User, error)
+	UpdateUserRole(userID string, role models.UpdateRoleRequest) error
 	// ChangePassword(token string, req *models.ChangePasswordRequest) error
 	// DeleteProfile(token, password string) error
-	// ListUsers(token string, filter models.ListUsersFilter) (*models.ListUsersResponse, error)
-	// GetUser(token string, userID uuid.UUID) (*models.User, error)
-	// UpdateUserRole(token string, userID uuid.UUID, role models.Role) error
 	// DeactivateUser(token string, userID uuid.UUID) error
 }
 
@@ -114,4 +112,15 @@ func (s *userService) UpdateProfile(id string, req *models.UpdateUser) (*models.
 	}
 
 	return updatedUser, nil
+}
+
+func (s *userService) UpdateUserRole(userID string, role models.UpdateRoleRequest) error {
+	err := s.userRepo.UpdateRole(userID, role)
+
+	fmt.Println("not updated here")
+	if err != nil {
+		return fmt.Errorf("failed updating role")
+	}
+	fmt.Println("updated ss here")
+	return nil
 }
