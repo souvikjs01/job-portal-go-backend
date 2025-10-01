@@ -44,5 +44,6 @@ func SetupRoutes(router *gin.Engine, db *store.DB, cfg *config.Config) {
 		privateRoute.GET("/users", jwtService.AuthMiddleware(), userHandler.GetAllUsers)
 		privateRoute.PUT("/update/:id", jwtService.AuthMiddleware(), userHandler.UpdateUser)
 		privateRoute.PUT("/update_role/:user_id", jwtService.AuthMiddleware(), userHandler.UpdateRole)
+		privateRoute.DELETE("/delete_user/:user_id", jwtService.AuthMiddleware(), userHandler.DeleteUser)
 	}
 }

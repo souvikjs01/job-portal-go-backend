@@ -14,9 +14,8 @@ type UserService interface {
 	GetAllUser() ([]models.User, error)
 	UpdateProfile(id string, req *models.UpdateUser) (*models.User, error)
 	UpdateUserRole(userID string, role models.UpdateRoleRequest) error
-	// ChangePassword(token string, req *models.ChangePasswordRequest) error
-	// DeleteProfile(token, password string) error
-	// DeactivateUser(token string, userID uuid.UUID) error
+	// ChangePassword(token string, req *models.ChangePasswordRequest) erro
+	DeleteUser(userID string) error
 }
 
 type userService struct {
@@ -122,5 +121,19 @@ func (s *userService) UpdateUserRole(userID string, role models.UpdateRoleReques
 		return fmt.Errorf("failed updating role")
 	}
 	fmt.Println("updated ss here")
+	return nil
+}
+
+func (s *userService) DeleteUser(userID string) error {
+	_, err := s.userRepo.GetByID(userID)
+	if err != nil {
+		return fmt.Errorf("user not exist")
+	}
+
+	// user exist:
+	err = s.userRepo.Delete(userID)
+	if err != nil {
+		return err
+	}
 	return nil
 }

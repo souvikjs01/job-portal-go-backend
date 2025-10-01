@@ -101,7 +101,7 @@ func (r *userRepository) Update(id string, user *models.UpdateUser) (*models.Use
 }
 
 func (r *userRepository) Delete(id string) error {
-	return r.db.Delete(&models.User{}, id).Error
+	return r.db.Where("id = ?", id).Delete(&models.User{}).Error
 }
 
 // func (r *userRepository) UpdatePassword(userID uuid.UUID, hashedPassword string) error {

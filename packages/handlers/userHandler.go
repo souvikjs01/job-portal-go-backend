@@ -214,3 +214,48 @@ func (h *UserHandler) UpdateRole(c *gin.Context) {
 		"data":    "role is updated successfully",
 	})
 }
+
+func (h *UserHandler) DeleteUser(c *gin.Context) {
+	user_role, exists := c.Get("role")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"error":   "role not found",
+		})
+		return
+	}
+
+	role, ok := user_role.(models.Role)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"error":   "invalid role type",
+		})
+		return
+	}
+
+	if role != models.RoleAdmin {
+		c.JSON(http.StatusForbidden, gin.H{
+			"success": false,
+			"error":   "access denied",
+		})
+		return
+	}
+
+	userId := c.Param("user_id")
+
+	// Call service layer
+	err := h.userService.DeleteUser(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    "user deleted successfully",
+	})
+}
