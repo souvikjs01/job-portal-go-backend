@@ -20,5 +20,11 @@ func NewJobService(jobRepo repository.JobRepository) JobService {
 }
 
 func (s *jobService) CreateJob(req *models.CreateJob, userId string) (*models.Job, error) {
+	job, err := s.jobRepo.Create(req, userId)
 
+	if err != nil {
+		return nil, err
+	}
+
+	return job, nil
 }

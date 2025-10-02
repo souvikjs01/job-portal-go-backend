@@ -47,7 +47,7 @@ type Job struct {
 	ApplyLink       *string   `json:"applyLink"`
 
 	UserID string `json:"userId" validate:"required"` // foreign key
-	User   User   `json:"user" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	User   User   `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type CreateUser struct {
@@ -90,5 +90,4 @@ type CreateJob struct {
 	MaxSalary       *int    `json:"max_salary"`
 	Type            JobType `json:"type" validate:"required,oneof=remote hybrid onsite"`
 	ApplyLink       *string `json:"applyLink"`
-	UserID          string  `json:"userId" validate:"required"`
 }

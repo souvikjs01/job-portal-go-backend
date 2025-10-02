@@ -22,15 +22,18 @@ func SetupRoutes(router *gin.Engine, db *store.DB, cfg *config.Config) {
 
 	// Initialize repository layer
 	userRepo := repository.NewUserRepository(db)
+	jobRepo := repository.NewJobRepository(db)
 
 	// Initialize auth service
 	jwtService := auth.NewJWTService(&cfg.Auth)
 
 	// Initialize service layer
 	userService := services.NewUserService(userRepo, jwtService)
+	jobService := services.NewJobService(jobRepo)
 
 	// Initialize handler layer
 	userHandler := handlers.NewUserHandler(userService)
+	jobHandler := handlers.NewJobHandler(jobService)
 
 	// Public Routes
 	publicAuthRoute := router.Group("/api/v1/auth")
@@ -45,5 +48,10 @@ func SetupRoutes(router *gin.Engine, db *store.DB, cfg *config.Config) {
 		privateRoute.PUT("/update/:id", jwtService.AuthMiddleware(), userHandler.UpdateUser)
 		privateRoute.PUT("/update_role/:user_id", jwtService.AuthMiddleware(), userHandler.UpdateRole)
 		privateRoute.DELETE("/delete_user/:user_id", jwtService.AuthMiddleware(), userHandler.DeleteUser)
+	}
+
+	privateJobRoute := router.Group("/api/v1")
+	{
+		privateJobRoute.POST("/newjob", jwtService.AuthMiddleware(), jobHandler.CreateJob)
 	}
 }

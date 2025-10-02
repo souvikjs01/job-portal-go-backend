@@ -13,26 +13,29 @@ func ValidateStruct(s interface{}) map[string]string {
 	}
 
 	errors := make(map[string]string)
-	for _, err := range err.(validator.ValidationErrors) {
-		field := err.Field()
-		tag := err.Tag()
-		var msg string
 
-		// Customize messages
-		switch tag {
-		case "required":
-			msg = "is required"
-		case "email":
-			msg = "must be a valid email"
-		case "min":
-			msg = "value is too short"
-		case "max":
-			msg = "value is too long"
-		default:
-			msg = "is invalid"
+	if errs, ok := err.(validator.ValidationErrors); ok {
+		for _, e := range errs {
+			field := e.Field()
+			tag := e.Tag()
+			var msg string
+
+			// Customize messages
+			switch tag {
+			case "required":
+				msg = "is required"
+			case "email":
+				msg = "must be a valid email"
+			case "min":
+				msg = "value is too short"
+			case "max":
+				msg = "value is too long"
+			default:
+				msg = "is invalid"
+			}
+
+			errors[field] = msg
 		}
-
-		errors[field] = msg
 	}
 
 	return errors
