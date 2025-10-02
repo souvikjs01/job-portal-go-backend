@@ -38,10 +38,10 @@ type Job struct {
 	Description     string    `json:"description" validate:"required"`
 	Location        string    `json:"location" validate:"required"`
 	Company         string    `json:"company" validate:"required"`
-	MinSalary       *int      `json:"min_salary" validate:"required"`
+	MinSalary       *int      `json:"min_salary"`
 	ExperienceLevel string    `json:"experience_level" validate:"required"`
 	Skills          string    `json:"skills" validate:"required"`
-	MaxSalary       *int      `json:"max_salary" validate:"required"`
+	MaxSalary       *int      `json:"max_salary"`
 	Type            JobType   `json:"type" validate:"required,oneof=remote hybrid onsite"`
 	CreatedAt       time.Time `json:"created_at"`
 	ApplyLink       *string   `json:"applyLink"`
@@ -77,4 +77,18 @@ type JWTClaims struct {
 
 type UpdateRoleRequest struct {
 	Role Role `json:"role" binding:"required,oneof=user recruiter admin"`
+}
+
+type CreateJob struct {
+	Title           string  `json:"title" validate:"required,min=3,max=20"`
+	Description     string  `json:"description" validate:"required"`
+	Location        string  `json:"location" validate:"required"`
+	Company         string  `json:"company" validate:"required"`
+	MinSalary       *int    `json:"min_salary"`
+	ExperienceLevel string  `json:"experience_level" validate:"required"`
+	Skills          string  `json:"skills" validate:"required"`
+	MaxSalary       *int    `json:"max_salary"`
+	Type            JobType `json:"type" validate:"required,oneof=remote hybrid onsite"`
+	ApplyLink       *string `json:"applyLink"`
+	UserID          string  `json:"userId" validate:"required"`
 }
