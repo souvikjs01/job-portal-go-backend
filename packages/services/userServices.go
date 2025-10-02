@@ -14,7 +14,6 @@ type UserService interface {
 	GetAllUser() ([]models.User, error)
 	UpdateProfile(id string, req *models.UpdateUser) (*models.User, error)
 	UpdateUserRole(userID string, role models.UpdateRoleRequest) error
-	// ChangePassword(token string, req *models.ChangePasswordRequest) erro
 	DeleteUser(userID string) error
 }
 

@@ -18,7 +18,6 @@ type UserRepository interface {
 	GetByUsername(username string) (*models.User, error)
 	Update(id string, user *models.UpdateUser) (*models.User, error)
 	Delete(id string) error
-	// UpdatePassword(userID uuid.UUID, hashedPassword string) error
 	UpdateRole(userID string, role models.UpdateRoleRequest) error
 }
 

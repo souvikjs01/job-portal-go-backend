@@ -1,0 +1,47 @@
+package repository
+
+import (
+	"fmt"
+	"job_portal/packages/models"
+	"job_portal/packages/store"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
+
+type JobRepository interface {
+	Create(job *models.CreateJob, userId string) (*models.Job, error)
+}
+
+type jobRepository struct {
+	db *gorm.DB
+}
+
+func NewJobRepository(db *store.DB) JobRepository {
+	return &jobRepository{
+		db: db.DB,
+	}
+}
+
+func (r *jobRepository) Create(job *models.CreateJob, userId string) (*models.Job, error) {
+	newJob := models.Job{
+		Id:              uuid.New().String(),
+		Title:           job.Title,
+		Description:     job.Description,
+		Location:        job.Location,
+		Company:         job.Company,
+		MinSalary:       job.MinSalary,
+		MaxSalary:       job.MaxSalary,
+		ExperienceLevel: job.ExperienceLevel,
+		Skills:          job.Skills,
+		Type:            job.Type,
+		ApplyLink:       job.ApplyLink,
+		UserID:          userId,
+	}
+
+	if err := r.db.Create(&newJob).Error; err != nil {
+		return nil, fmt.Errorf("failed to create job %s", err)
+	}
+
+	return &newJob, nil
+}
