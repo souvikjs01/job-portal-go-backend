@@ -102,3 +102,21 @@ func (h *JobHandler) FindJobByID(c *gin.Context) {
 		"data":    job,
 	})
 }
+
+func (h *JobHandler) FindAllJob(c *gin.Context) {
+	// Call service layer
+	jobs, err := h.jobService.GetAllJob()
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"success": false,
+			"error":   err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    jobs,
+	})
+}

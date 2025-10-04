@@ -54,5 +54,6 @@ func SetupRoutes(router *gin.Engine, db *store.DB, cfg *config.Config) {
 	{
 		privateJobRoute.POST("/newjob", jwtService.AuthMiddleware(), jobHandler.CreateJob)
 		privateJobRoute.GET("/job/:id", jwtService.AuthMiddleware(), jobHandler.FindJobByID)
+		privateJobRoute.GET("/jobs", jwtService.AuthMiddleware(), jobHandler.FindAllJob)
 	}
 }

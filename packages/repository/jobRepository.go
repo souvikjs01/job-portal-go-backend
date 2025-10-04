@@ -12,6 +12,7 @@ import (
 type JobRepository interface {
 	Create(job *models.CreateJob, userId string) (*models.Job, error)
 	GetJobByID(id string) (*models.Job, error)
+	GetAllJob() ([]models.Job, error)
 }
 
 type jobRepository struct {
@@ -54,4 +55,13 @@ func (r *jobRepository) GetJobByID(id string) (*models.Job, error) {
 	}
 
 	return &job, nil
+}
+
+func (r *jobRepository) GetAllJob() ([]models.Job, error) {
+	var jobs []models.Job
+	if err := r.db.Find(&jobs).Error; err != nil {
+		return nil, fmt.Errorf("not found")
+	}
+
+	return jobs, nil
 }
