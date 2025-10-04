@@ -9,6 +9,7 @@ type JobService interface {
 	CreateJob(req *models.CreateJob, userId string) (*models.Job, error)
 	GetJobByID(id string) (*models.Job, error)
 	GetAllJob() ([]models.Job, error)
+	Update(id string, job *models.UpdateJob) (*models.Job, error)
 }
 
 type jobService struct {
@@ -49,4 +50,14 @@ func (s *jobService) GetAllJob() ([]models.Job, error) {
 	}
 
 	return job, nil
+}
+
+func (s *jobService) Update(id string, job *models.UpdateJob) (*models.Job, error) {
+	updatedJob, err := s.jobRepo.Update(id, job)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedJob, nil
 }

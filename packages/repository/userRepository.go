@@ -103,11 +103,6 @@ func (r *userRepository) Delete(id string) error {
 	return r.db.Where("id = ?", id).Delete(&models.User{}).Error
 }
 
-// func (r *userRepository) UpdatePassword(userID uuid.UUID, hashedPassword string) error {
-
-// 	return err
-// }
-
 func (r *userRepository) UpdateRole(userID string, req models.UpdateRoleRequest) error {
 
 	return r.db.Model(&models.User{}).

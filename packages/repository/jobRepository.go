@@ -13,6 +13,7 @@ type JobRepository interface {
 	Create(job *models.CreateJob, userId string) (*models.Job, error)
 	GetJobByID(id string) (*models.Job, error)
 	GetAllJob() ([]models.Job, error)
+	Update(id string, job *models.UpdateJob) (*models.Job, error)
 }
 
 type jobRepository struct {
@@ -64,4 +65,18 @@ func (r *jobRepository) GetAllJob() ([]models.Job, error) {
 	}
 
 	return jobs, nil
+}
+
+func (r *jobRepository) Update(id string, job *models.UpdateJob) (*models.Job, error) {
+	var existJob models.Job
+
+	if err := r.db.First(&existJob, "id = ?", id).Error; err != nil {
+		return nil, fmt.Errorf("job not found: %w", err)
+	}
+
+	if err := r.db.Model(&existJob).Updates(job).Error; err != nil {
+		return nil, fmt.Errorf("failed updating job: %w", err)
+	}
+
+	return &existJob, nil
 }

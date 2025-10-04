@@ -91,3 +91,16 @@ type CreateJob struct {
 	Type            JobType `json:"type" validate:"required,oneof=remote hybrid onsite"`
 	ApplyLink       *string `json:"applyLink"`
 }
+
+type UpdateJob struct {
+	Description     *string  `json:"description"`
+	Title           *string  `json:"title"`
+	Location        *string  `json:"location"`
+	Company         *string  `json:"company"`
+	MinSalary       *int     `json:"min_salary"`
+	ExperienceLevel *string  `json:"experience_level"`
+	Skills          *string  `json:"skills"`
+	MaxSalary       *int     `json:"max_salary"`
+	Type            *JobType `json:"type" validate:"oneof=remote hybrid onsite"`
+	ApplyLink       *string  `json:"applyLink"`
+}
