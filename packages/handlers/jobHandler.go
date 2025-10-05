@@ -184,3 +184,50 @@ func (h *JobHandler) UpdateJob(c *gin.Context) {
 	})
 
 }
+
+func (h *JobHandler) DeleteJob(c *gin.Context) {
+	user_role, existUserRole := c.Get("role")
+
+	if !existUserRole {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"error":   "role not found",
+		})
+		return
+	}
+
+	role, ok := user_role.(models.Role)
+
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"error":   "invalid role type",
+		})
+		return
+	}
+
+	if role == models.RoleUser {
+		c.JSON(http.StatusForbidden, gin.H{
+			"success": false,
+			"error":   "access denied",
+		})
+		return
+	}
+
+	id := c.Param("id")
+
+	err := h.jobService.Delete(id)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"success": false,
+			"error":   err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "job deleted successfully",
+	})
+}

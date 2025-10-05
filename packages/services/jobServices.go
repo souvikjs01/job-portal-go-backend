@@ -10,6 +10,7 @@ type JobService interface {
 	GetJobByID(id string) (*models.Job, error)
 	GetAllJob() ([]models.Job, error)
 	Update(id string, job *models.UpdateJob) (*models.Job, error)
+	Delete(id string) error
 }
 
 type jobService struct {
@@ -60,4 +61,20 @@ func (s *jobService) Update(id string, job *models.UpdateJob) (*models.Job, erro
 	}
 
 	return updatedJob, nil
+}
+
+func (s *jobService) Delete(id string) error {
+	_, err := s.jobRepo.GetJobByID(id)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.jobRepo.Delete(id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

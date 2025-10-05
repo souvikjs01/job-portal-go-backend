@@ -14,6 +14,7 @@ type JobRepository interface {
 	GetJobByID(id string) (*models.Job, error)
 	GetAllJob() ([]models.Job, error)
 	Update(id string, job *models.UpdateJob) (*models.Job, error)
+	Delete(id string) error
 }
 
 type jobRepository struct {
@@ -79,4 +80,8 @@ func (r *jobRepository) Update(id string, job *models.UpdateJob) (*models.Job, e
 	}
 
 	return &existJob, nil
+}
+
+func (r *jobRepository) Delete(id string) error {
+	return r.db.Where("id = ?", id).Delete(&models.Job{}).Error
 }
