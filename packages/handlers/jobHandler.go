@@ -231,3 +231,30 @@ func (h *JobHandler) DeleteJob(c *gin.Context) {
 		"message": "job deleted successfully",
 	})
 }
+
+func (h *JobHandler) SearchJobs(c *gin.Context) {
+	query := c.Query("job")
+
+	if query == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   "query parameter job is required",
+		})
+		return
+	}
+
+	jobs, err := h.jobService.SearchJobs(query)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    jobs,
+	})
+}

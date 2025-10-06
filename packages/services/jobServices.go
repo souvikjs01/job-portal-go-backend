@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"job_portal/packages/models"
 	"job_portal/packages/repository"
 )
@@ -11,6 +12,7 @@ type JobService interface {
 	GetAllJob() ([]models.Job, error)
 	Update(id string, job *models.UpdateJob) (*models.Job, error)
 	Delete(id string) error
+	SearchJobs(query string) ([]models.Job, error)
 }
 
 type jobService struct {
@@ -77,4 +79,16 @@ func (s *jobService) Delete(id string) error {
 	}
 
 	return nil
+}
+
+func (s *jobService) SearchJobs(query string) ([]models.Job, error) {
+	if query == "" {
+		return nil, fmt.Errorf("query cannot be empty")
+	}
+	jobs, err := s.jobRepo.SearchJobs(query)
+
+	if err != nil {
+		return nil, err
+	}
+	return jobs, nil
 }

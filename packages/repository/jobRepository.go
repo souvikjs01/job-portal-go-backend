@@ -15,6 +15,7 @@ type JobRepository interface {
 	GetAllJob() ([]models.Job, error)
 	Update(id string, job *models.UpdateJob) (*models.Job, error)
 	Delete(id string) error
+	SearchJobs(query string) ([]models.Job, error)
 }
 
 type jobRepository struct {
@@ -84,4 +85,27 @@ func (r *jobRepository) Update(id string, job *models.UpdateJob) (*models.Job, e
 
 func (r *jobRepository) Delete(id string) error {
 	return r.db.Where("id = ?", id).Delete(&models.Job{}).Error
+}
+
+func (r *jobRepository) SearchJobs(query string) ([]models.Job, error) {
+	var jobs []models.Job
+
+	err := r.db.Where(`
+		title ILIKE ? OR 
+		description ILIKE ? OR 
+		company ILIKE ? OR 
+		skills ILIKE ? OR 
+		location ILIKE ?`,
+		"%"+query+"%",
+		"%"+query+"%",
+		"%"+query+"%",
+		"%"+query+"%",
+		"%"+query+"%",
+	).Find(&jobs).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return jobs, nil
 }

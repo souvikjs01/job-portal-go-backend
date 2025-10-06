@@ -57,5 +57,6 @@ func SetupRoutes(router *gin.Engine, db *store.DB, cfg *config.Config) {
 		privateJobRoute.GET("/jobs", jwtService.AuthMiddleware(), jobHandler.FindAllJob)
 		privateJobRoute.PUT("/job/:id", jwtService.AuthMiddleware(), jobHandler.UpdateJob)
 		privateJobRoute.DELETE("/job/remove/:id", jwtService.AuthMiddleware(), jobHandler.DeleteJob)
+		privateJobRoute.GET("/job/search", jwtService.AuthMiddleware(), jobHandler.SearchJobs)
 	}
 }
