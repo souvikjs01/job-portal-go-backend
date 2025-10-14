@@ -1,0 +1,32 @@
+# VCS
+.git
+.gitignore
+
+# Go build artifacts
+bin/
+build/
+dist/
+*.exe
+*.out
+
+# Dependency and cache directories
+vendor/
+**/__debug_bin
+
+# Logs and temporary files
+*.log
+tmp/
+*.tmp
+
+# IDE & editor settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker itself
+Dockerfile
+.dockerignore
+
