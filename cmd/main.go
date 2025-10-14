@@ -28,7 +28,7 @@ func main() {
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"Response": "Everything is ok",
+			"Response": "Welcome to job portal app",
 		})
 	})
 	// allow all the origin :
