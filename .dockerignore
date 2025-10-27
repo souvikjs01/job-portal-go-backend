@@ -26,7 +26,3 @@ tmp/
 .DS_Store
 Thumbs.db
 
-# Docker itself
-Dockerfile
-.dockerignore
-
